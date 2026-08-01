@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>For Sweet Girl</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#f6ece3;
+    --bg-1:#f2dad9;
+    --bg-2:#e8bcbc;
+    --rose:#c58b7e;
+    --rose-light:#dba99c;
+    --blush:#a8695a;
+    --gold:#c9a066;
+    --ink:#5c4032;
+    --ink-dim:#9c7d6c;
+    --card-bg:#ffffff;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:var(--bg-0);
+    color:var(--ink);
+    font-family:'Jost', sans-serif;
+    overflow:hidden;
+  }
+
+  body{
+    background:
+      radial-gradient(ellipse 120% 80% at 50% -10%, var(--bg-0) 0%, transparent 55%),
+      radial-gradient(ellipse 100% 70% at 50% 110%, var(--bg-2) 0%, transparent 65%),
+      radial-gradient(ellipse 80% 50% at 85% 15%, rgba(197,139,126,0.12) 0%, transparent 60%),
+      var(--bg-1);
+  }
+
+  .stage{
+    position:relative;
+    width:100%;
+    height:100vh;
+    height:100dvh;
+    overflow:hidden;
+  }
+
+  /* ambient floating embers */
+  .ember{
+    position:absolute;
+    bottom:-10px;
+    border-radius:50%;
+    background:radial-gradient(circle, var(--rose), transparent 70%);
+    opacity:0.35;
+    filter:blur(0.5px);
+    animation:rise linear infinite;
+  }
+  @keyframes rise{
+    0%{ transform:translateY(0) translateX(0); opacity:0; }
+    10%{ opacity:0.6; }
+    90%{ opacity:0.35; }
+    100%{ transform:translateY(-105vh) translateX(var(--drift,20px)); opacity:0; }
+  }
+
+  /* ---------- SCREEN 1: TEASE ---------- */
+  .tease{
+    position:absolute; inset:0;
+    text-align:center;
+    transition:opacity 0.9s ease, transform 0.9s ease, filter 0.9s ease;
+    z-index:5;
+  }
+
+  .heart-wrap{
+    position:absolute;
+    left:50%; top:42%;
+    transform:translate(-50%,-50%);
+    width:120px; height:120px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    transition:left 0.45s cubic-bezier(.34,1.56,.64,1), top 0.45s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  .tease-text{
+    position:absolute;
+    left:50%; bottom:14%;
+    transform:translateX(-50%);
+    width:100%;
+    max-width:340px;
+    padding:0 24px;
+    display:flex; flex-direction:column; align-items:center;
+    gap:10px;
+  }
+
+  .glow-ring{
+    position:absolute;
+    width:100%; height:100%;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(197,139,126,0.30), transparent 65%);
+    animation:pulse-ring 2.6s ease-in-out infinite;
+  }
+  @keyframes pulse-ring{
+    0%,100%{ transform:scale(0.85); opacity:0.6; }
+    50%{ transform:scale(1.15); opacity:1; }
+  }
+
+  .heart{
+    position:relative;
+    width:54px; height:54px;
+    transform:rotate(45deg);
+    background:linear-gradient(135deg, var(--rose-light), var(--rose));
+    box-shadow:0 0 24px rgba(197,139,126,0.5), 0 0 50px rgba(197,139,126,0.22);
+    animation:beat 1.8s ease-in-out infinite;
+  }
+  .heart::before, .heart::after{
+    content:"";
+    position:absolute;
+    width:54px; height:54px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--rose-light), var(--rose));
+  }
+  .heart::before{ top:-27px; left:0; }
+  .heart::after{ top:0; left:-27px; }
+  @keyframes beat{
+    0%,100%{ transform:rotate(45deg) scale(1); }
+    25%{ transform:rotate(45deg) scale(1.08); }
+    40%{ transform:rotate(45deg) scale(0.98); }
+  }
+
+  .heart-wrap:active .heart{ transform:rotate(45deg) scale(0.85); }
+
+  .tease-label{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:1.55rem;
+    letter-spacing:0.02em;
+    color:var(--blush);
+    text-shadow:0 0 20px rgba(197,139,126,0.15);
+  }
+
+  .tease-sub{
+    font-size:0.72rem;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    opacity:0.65;
+  }
+
+  .stage.opened .tease{
+    opacity:0;
+    transform:scale(1.15);
+    filter:blur(6px);
+    pointer-events:none;
+  }
+
+  /* crack burst on tap */
+  .burst{
+    position:absolute;
+    inset:0;
+    display:flex; align-items:center; justify-content:center;
+    pointer-events:none;
+    z-index:4;
+  }
+  .shard{
+    position:absolute;
+    width:6px; height:6px;
+    background:var(--rose-light);
+    border-radius:1px;
+    opacity:0;
+  }
+  .stage.opened .shard{
+    animation:fly 0.9s ease-out forwards;
+  }
+  @keyframes fly{
+    0%{ opacity:1; transform:translate(0,0) scale(1); }
+    100%{ opacity:0; transform:translate(var(--tx), var(--ty)) scale(0.2) rotate(180deg); }
+  }
+
+  /* ---------- SCREEN 2: LETTER ---------- */
+  .letter{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    padding:6vh 22px 5vh;
+    opacity:0;
+    transform:translateY(24px) scale(0.98);
+    transition:opacity 1.1s ease 0.35s, transform 1.1s ease 0.35s;
+    z-index:3;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .stage.opened .letter{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+
+  .card{
+    width:100%;
+    max-width:460px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:22px;
+    padding:38px 26px 34px;
+    margin:auto;
+    border-radius:18px;
+    background:linear-gradient(180deg, #ffffff, #fef4f8);
+    border:1px solid rgba(197,139,126,0.22);
+    box-shadow:0 30px 60px -20px rgba(168,105,90,0.25), inset 0 1px 0 rgba(255,255,255,0.8);
+    backdrop-filter:blur(2px);
+  }
+
+  .eyebrow{
+    font-size:0.68rem;
+    letter-spacing:0.32em;
+    text-transform:uppercase;
+    color:var(--gold);
+    opacity:0.85;
+  }
+
+  .photo-frame{
+    width:180px; height:180px;
+    border-radius:50%;
+    padding:5px;
+    background:conic-gradient(from 0deg, var(--gold), var(--rose), var(--rose-light), var(--gold));
+    box-shadow:0 0 0 1px rgba(255,255,255,0.6), 0 20px 40px -12px rgba(168,105,90,0.35);
+  }
+  .photo-frame .inner{
+    width:100%; height:100%;
+    border-radius:50%;
+    overflow:hidden;
+    background:
+      linear-gradient(160deg, #2a1620, #150b10);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .photo-frame img{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .photo-placeholder{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:0.85rem;
+    color:var(--ink-dim);
+    text-align:center;
+    padding:12px;
+    opacity:0.6;
+  }
+
+  .to-line{
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.1rem;
+    color:var(--ink-dim);
+    letter-spacing:0.02em;
+  }
+  .to-line b{
+    color:var(--rose-light);
+    font-weight:600;
+  }
+
+  h1{
+    margin:0;
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600;
+    font-size:2.1rem;
+    text-align:center;
+    color:var(--blush);
+    letter-spacing:0.01em;
+    line-height:1.15;
+    text-shadow:0 0 30px rgba(197,139,126,0.12);
+  }
+
+  .divider{
+    width:52px; height:1px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity:0.7;
+  }
+
+  .poem{
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.18rem;
+    line-height:1.85;
+    text-align:center;
+    color:var(--ink);
+    letter-spacing:0.01em;
+  }
+  .poem em{
+    color:var(--rose-light);
+    font-style:italic;
+  }
+
+  .signoff{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:1.05rem;
+    color:var(--ink-dim);
+    align-self:flex-end;
+    margin-top:-6px;
+  }
+
+  .footer-note{
+    font-size:0.65rem;
+    letter-spacing:0.24em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    opacity:0.45;
+    margin-top:4px;
+  }
+
+  @media (max-width:380px){
+    h1{ font-size:1.8rem; }
+    .poem{ font-size:1.08rem; }
+    .photo-frame{ width:150px; height:150px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .heart, .glow-ring, .ember, .shard{ animation:none !important; }
+    .tease, .letter{ transition:opacity 0.4s ease; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+
+  <div id="embers"></div>
+
+  <!-- Screen 1: the tease -->
+  <div class="tease" id="tease">
+    <div class="heart-wrap" id="heartBtn">
+      <div class="glow-ring"></div>
+      <div class="heart"></div>
+    </div>
+    <div class="tease-text">
+      <div class="tease-label" id="teaseLabel">A secret awaits&hellip;</div>
+      <div class="tease-sub" id="teaseSub">tap the heart</div>
+    </div>
+  </div>
+
+  <div class="burst" id="burst"></div>
+
+  <!-- Screen 2: the letter -->
+  <div class="letter">
+    <div class="card">
+      <div class="eyebrow">Happy Girlfriend's&nbsp;Day</div>
+
+      <div class="photo-frame">
+        <div class="inner">
+          <!--
+            Insert your picture:
+            put an image file named "us.jpg" in the same folder as this HTML file,
+            or change the src below to your image's filename/path.
+          -->
+          <img src="us.jpg" alt="A photo of us"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="photo-placeholder" style="display:none; align-items:center; justify-content:center; height:100%;">
+            our picture<br>goes here
+          </div>
+        </div>
+      </div>
+
+      <div class="to-line">For <b>my Sweet Girl</b></div>
+
+      <h1>Mine,</h1>
+      <div class="divider"></div>
+
+      <p class="poem">
+        You are the embodiment of that scripture that says<br>
+        <em>"Every good gift and every perfect gift is from above,
+        and comes down from the Father of lights&hellip;"</em>
+        <br><br>
+        Sweet girl, you are God's gift to me. So good and perfect.
+        <br><br>
+        Sometimes I stay and wonder and I ask God, "what's the catch?
+        She is just so good and perfect."
+        <br><br>
+        Every second I spend with you are moments I want to hold on to
+        for life. My spec. You are my dream girl for real.
+        You are a good woman.
+        <br><br>
+        I love you, Sweet girl. Life is so much better with you.
+      </p>
+
+      <div class="signoff">— Your man</div>
+      <div class="footer-note">Happy Girlfriend's Day, Sweet Girl</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const stage = document.getElementById('stage');
+  const heartBtn = document.getElementById('heartBtn');
+  const burst = document.getElementById('burst');
+  const embersWrap = document.getElementById('embers');
+
+  // ambient floating embers
+  function spawnEmber(){
+    const e = document.createElement('div');
+    e.className = 'ember';
+    const size = 3 + Math.random() * 6;
+    e.style.width = size + 'px';
+    e.style.height = size + 'px';
+    e.style.left = Math.random() * 100 + 'vw';
+    e.style.setProperty('--drift', (Math.random() * 60 - 30) + 'px');
+    e.style.animationDuration = (7 + Math.random() * 7) + 's';
+    embersWrap.appendChild(e);
+    setTimeout(() => e.remove(), 15000);
+  }
+  setInterval(spawnEmber, 700);
+  for (let i = 0; i < 6; i++) setTimeout(spawnEmber, i * 300);
+
+  // heart burst shards
+  function makeBurst(){
+    burst.innerHTML = '';
+    const count = 14;
+    for (let i = 0; i < count; i++){
+      const s = document.createElement('div');
+      s.className = 'shard';
+      const angle = (Math.PI * 2 * i) / count + Math.random() * 0.3;
+      const dist = 80 + Math.random() * 90;
+      s.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+      s.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+      s.style.left = 'calc(50% - 3px)';
+      s.style.top = 'calc(50% - 3px)';
+      burst.appendChild(s);
+    }
+  }
+
+  const teaseLabel = document.getElementById('teaseLabel');
+  const teaseSub = document.getElementById('teaseSub');
+
+  // hide-and-seek: the heart dodges a few times before it lets itself be caught
+  const dodgeMessages = [
+    { label: "Not so fast&hellip;", sub: "catch me if you can" },
+    { label: "Almost had it!", sub: "try again" },
+    { label: "So close&hellip;", sub: "one more time" },
+    { label: "Okay, okay&hellip;", sub: "for real this time" }
+  ];
+  let attempts = 0;
+  const requiredClicks = dodgeMessages.length; // last click reveals
+
+  function randomPosition(){
+    // keep the heart within a safe zone, away from screen edges and the text band
+    const left = 22 + Math.random() * 56;  // 22%–78%
+    const top = 24 + Math.random() * 34;   // 24%–58%
+    return { left: left + '%', top: top + '%' };
+  }
+
+  let opened = false;
+
+  function dodge(){
+    const msg = dodgeMessages[attempts - 1];
+    teaseLabel.innerHTML = msg.label;
+    teaseSub.textContent = msg.sub;
+    const pos = randomPosition();
+    heartBtn.style.left = pos.left;
+    heartBtn.style.top = pos.top;
+  }
+
+  function reveal(){
+    if (opened) return;
+    opened = true;
+    makeBurst();
+    stage.classList.add('opened');
+  }
+
+  function handleTap(){
+    if (opened) return;
+    attempts++;
+    if (attempts < requiredClicks){
+      dodge();
+    } else {
+      reveal();
+    }
+  }
+
+  heartBtn.addEventListener('click', handleTap);
+  heartBtn.addEventListener('touchend', function(e){ e.preventDefault(); handleTap(); });
+</script>
+
+</body>
+</html>
